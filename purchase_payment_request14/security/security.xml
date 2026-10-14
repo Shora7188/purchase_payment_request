@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Payment Request Module Category -->
+        <record id="module_category_payment_request"  model="ir.module.category">
+            <field name="name">Payment Requests</field>
+            <field name="description">Payment Request Access Rights</field>
+            <field name="sequence">35</field>
+        </record>
+
+        <!-- Payment Request User -->
+        <record id="group_payment_request_user" model="res.groups">
+            <field name="name">Payment Request User</field>
+            <field name="category_id"  ref="purchase_payment_request14.module_category_payment_request"/>
+        </record>
+
+        <!-- Finance Reviewer -->
+        <record id="group_payment_request_finance" model="res.groups">
+            <field name="name">Payment Request Finance Reviewer</field>
+            <field name="category_id"  ref="purchase_payment_request14.module_category_payment_request"/>
+            <field name="implied_ids"  eval="[(4, ref('purchase_payment_request14.group_payment_request_user'))]"/>
+        </record>
+
+        <!-- Payment Request Manager -->
+        <record id="group_payment_request_manager" model="res.groups">
+            <field name="name">Payment Request Manager</field>
+            <field name="category_id"  ref="purchase_payment_request14.module_category_payment_request"/>
+            <field name="implied_ids"  eval="[(4, ref('purchase_payment_request14.group_payment_request_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

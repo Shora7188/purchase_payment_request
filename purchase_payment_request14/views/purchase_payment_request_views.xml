@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_payment_request_tree" model="ir.ui.view">
+        <field name="name">purchase.payment.request.tree</field>
+        <field name="model">purchase.payment.request</field>
+        <field name="arch" type="xml">
+            <tree string="Payment Requests">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="company_id"/>
+                <field name="user_id"/>
+                <field name="po_count"/>
+                <field name="total_order"/>
+                <field name="total_advance"/>
+                <field name="effective_advance_percentage"/>
+                <field name="approver_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_payment_request_form" model="ir.ui.view">
+        <field name="name">purchase.payment.request.form</field>
+        <field name="model">purchase.payment.request</field>
+        <field name="arch" type="xml">
+            <form string="Payment Request">
+                <header>
+                    <button name="action_submit"
+                            string="Submit"
+                            type="object"
+                            class="oe_highlight"
+                            states="draft,revision"/>
+
+                    <button name="action_finance_review"
+                            string="Finance Review"
+                            type="object"
+                            class="oe_highlight"
+                            states="submitted"
+                            groups="purchase_payment_request.group_payment_request_finance,purchase_payment_request.group_payment_request_manager"/>
+
+                    <button name="action_send_to_gm"
+                            string="Send to General Manager"
+                            type="object"
+                            class="oe_highlight"
+                            states="finance_review"
+                            groups="purchase_payment_request.group_payment_request_finance,purchase_payment_request.group_payment_request_manager"/>
+
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="oe_highlight"
+                            states="gm_approval"
+                            groups="purchase_payment_request.group_payment_request_manager"/>
+
+                    <button name="action_request_revision"
+                            string="Request Revision"
+                            type="object"
+                            class="btn-warning"
+                            states="submitted,finance_review,gm_approval"
+                            groups="purchase_payment_request.group_payment_request_finance,purchase_payment_request.group_payment_request_manager"/>
+
+                    <button name="action_reject"
+                            string="Reject"
+                            type="object"
+                            class="btn-danger"
+                            states="submitted,finance_review,gm_approval,revision"/>
+
+                    <button name="action_refresh_purchase_orders"
+                            string="Refresh Purchase Orders"
+                            type="object"
+                            class="btn-secondary"
+                            states="draft"/>
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,submitted,finance_review,gm_approval,approved"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="date"
+                                   attrs="{'readonly': [('state', 'not in', ['draft', 'revision'])]}"/>
+                            <field name="company_id"
+                                   attrs="{'readonly': [('state', 'not in', ['draft', 'revision'])]}"/>
+                            <field name="user_id"/>
+                        </group>
+
+                        <group>
+                            <field name="date_from"
+                                   attrs="{'readonly': [('state', 'not in', ['draft', 'revision'])]}"/>
+                            <field name="date_to"
+                                   attrs="{'readonly': [('state', 'not in', ['draft', 'revision'])]}"/>
+                            <field name="approver_id"
+                                   attrs="{'readonly': [('state', 'not in', ['draft', 'revision'])]}"/>
+                        </group>
+                    </group>
+
+                    <group string="Payment Summary">
+                        <group>
+                            <field name="po_count" readonly="1"/>
+                            <field name="total_order" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="total_advance" readonly="1"/>
+                            <field name="effective_advance_percentage" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Purchase Orders">
+                            <div class="alert alert-info"
+                                 attrs="{'invisible': [('state', '!=', 'draft')]}">
+                                <strong>Automatic Selection:</strong>
+                                Purchase Orders are collected automatically
+                                according to the selected date range,
+                                confirmed status, Advance Percentage,
+                                company and previous Payment Requests.
+                            </div>
+
+                            <field name="line_ids"
+                                   readonly="1"
+                                   nolabel="1"
+                                   options="{'no_create': True, 'no_delete': True, 'no_edit': True}">
+                                <tree string="Purchase Orders"
+                                      create="0"
+                                      delete="0"
+                                      editable="false">
+
+                                    <field name="sequence"/>
+                                    <field name="purchase_order_id"
+                                           string="Purchase Order"/>
+
+                                    <field name="date_approve"/>
+                                    <field name="partner_id"/>
+                                    <field name="partner_ref"/>
+                                    <field name="warehouse_id"
+                                           string="Analytic Account"/>
+                                    <field name="amount_total"
+                                           sum="Total"/>
+                                    <field name="advance_percentage"/>
+                                    <field name="advance_amount"
+                                           sum="Total Advance"/>
+                                    <field name="currency_id"
+                                           invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Review"
+                              attrs="{'invisible': [('state', 'not in', ['submitted','finance_review','gm_approval','revision'])]}">
+                            <group>
+                                <field name="review_note"
+                                       placeholder="Review notes..."/>
+                            </group>
+                        </page>
+
+                        <page string="Rejection"
+                              attrs="{'invisible': [('state', '!=', 'rejected')]}">
+                            <group>
+                                <field name="rejection_reason"
+                                       readonly="1"/>
+                                <field name="rejected_by"
+                                       readonly="1"/>
+                                <field name="rejected_date"
+                                       readonly="1"/>
+                            </group>
+                        </page>
+
+                        <page string="Approval"
+                              attrs="{'invisible': [('state', '!=', 'approved')]}">
+                            <group>
+                                <field name="approved_by"
+                                       readonly="1"/>
+                                <field name="approved_date"
+                                       readonly="1"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_payment_request_search" model="ir.ui.view">
+        <field name="name">purchase.payment.request.search</field>
+        <field name="model">purchase.payment.request</field>
+        <field name="arch" type="xml">
+            <search string="Payment Requests">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="company_id"/>
+                <field name="user_id"/>
+                <field name="approver_id"/>
+                <field name="state"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_state"
+                            string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_company"
+                            string="Company"
+                            context="{'group_by': 'company_id'}"/>
+                    <filter name="group_date"
+                            string="Date"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="group_user"
+                            string="Prepared By"
+                            context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_purchase_payment_request" model="ir.actions.act_window">
+        <field name="name">Payment Requests</field>
+        <field name="res_model">purchase.payment.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_purchase_payment_request_tree"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Payment Request
+            </p>
+            <p>
+                Purchase Orders are collected automatically according
+                to the selected criteria.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_payment_request_root"
+              name="Payment Requirements"
+              sequence="50"/>
+
+    <menuitem id="menu_purchase_payment_request"
+              name="Payment Requests"
+              parent="menu_purchase_payment_request_root"
+              action="action_purchase_payment_request"
+              sequence="10"/>
+
+</odoo>

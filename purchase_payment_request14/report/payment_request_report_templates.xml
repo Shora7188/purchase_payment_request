@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="payment_request_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page"
+                         style="direction: rtl; font-family: DejaVu Sans;">
+
+                        <h2 style="text-align:center;">
+                            Payment Requirements / Advance Payment Approval Sheet
+                        </h2>
+
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <td><strong>Payment Request</strong></td>
+                                <td><span t-field="o.name"/></td>
+                                <td><strong>Date</strong></td>
+                                <td><span t-field="o.date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Company</strong></td>
+                                <td><span t-field="o.company_id"/></td>
+                                <td><strong>Prepared By</strong></td>
+                                <td><span t-field="o.user_id"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>From</strong></td>
+                                <td><span t-field="o.date_from"/></td>
+                                <td><strong>To</strong></td>
+                                <td><span t-field="o.date_to"/></td>
+                            </tr>
+                        </table>
+
+                        <table class="table table-sm table-bordered"
+                               style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Purchase Order</th>
+                                    <th>Approval Date</th>
+                                    <th>Vendor</th>
+                                    <th>Analytic Account</th>
+                                    <th>PO Amount</th>
+                                    <th>Advance %</th>
+                                    <th>Advance Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.line_ids"
+                                    t-as="line">
+                                    <td><span t-esc="line.sequence"/></td>
+                                    <td><span t-field="line.purchase_order_id"/></td>
+                                    <td><span t-field="line.date_approve"/></td>
+                                    <td><span t-field="line.partner_id"/></td>
+                                    <td><span t-field="line.analytic_id"/></td>
+                                    <td>
+                                        <span t-field="line.amount_total"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="line.advance_percentage"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="line.advance_amount"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm table-bordered"
+                               style="width:45%; margin-left:auto;">
+                            <tr>
+                                <td><strong>PO Count</strong></td>
+                                <td><span t-field="o.po_count"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total PO Amount</strong></td>
+                                <td><span t-field="o.total_order"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Advance</strong></td>
+                                <td><span t-field="o.total_advance"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Effective Advance %</strong></td>
+                                <td><span t-field="o.effective_advance_percentage"/></td>
+                            </tr>
+                        </table>
+
+                        <br/>
+
+                        <table class="table table-sm"
+                               style="width:100%;">
+                            <tr>
+                                <td style="height:80px; text-align:center;">
+                                    <strong>Prepared By</strong>
+                                </td>
+                                <td style="height:80px; text-align:center;">
+                                    <strong>Finance Review</strong>
+                                </td>
+                                <td style="height:80px; text-align:center;">
+                                    <strong>General Manager Approval</strong>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

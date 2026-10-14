@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_activity_type_payment_approval" model="mail.activity.type">
+        <field name="name">Payment Request Approval</field>
+        <field name="summary">Payment Request Approval</field>
+        <field name="category">default</field>
+        <field name="res_model_id" ref="purchase_payment_request14.model_purchase_payment_request"/>
+    </record>
+</odoo>
